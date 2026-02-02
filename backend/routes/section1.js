@@ -1,202 +1,108 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/connection'); // make sure this is your MySQL pool/connection
+const pool = require('../config/connection'); // your pg pool
 
-// POST /section1
-// router.post('/', (req, res) => {
-//     const data = req.body;
+router.post('/section1', async (req, res) => {
+  try {
+    const d = req.body;
+    console.log('Payload received:', d);
 
-//     const sql = `
-//     INSERT INTO section1
-//     (dataset_title, evaluator_name, affiliation, data_processing_level, data_type, data_type_other, 
-//     evaluation_type, use_case_description, optimum_data_collection, 
-//     optimum_pixel_resolution, optimum_pixel_resolution_unit, 
-//     optimum_gis_resolution, optimum_gis_resolution_unit, 
-//     optimum_ml_resolution, optimum_ml_resolution_unit, 
-//     optimum_prediction_spatial_resolution, optimum_prediction_spatial_resolution_unit, 
-//     optimum_prediction_temporal_resolution, 
-//     optimum_survey_aggregation_primary, optimum_survey_aggregation_secondary, 
-//     optimum_other_resolution, aoi_type, aoi_location, min_lat, max_lat, min_lon, max_lon, aoi_file_name, other_requirements)
-//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//     `;
+    // Convert numeric fields or null
+    const minLat = d.minLat ? parseFloat(d.minLat) : null;
+    const maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
+    const minLon = d.minLon ? parseFloat(d.minLon) : null;
+    const maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
 
-   
-// const values = [
-//     data.datasetTitle || null,
-//     data.evaluatorName || null,
-//     data.affiliation || null,
-//     data.dataProcessingLevel || null,
-//     data.dataType || null,
-//     data.dataTypeOther || null,
-//     data.evaluationType || null,
-//     data.useCaseDescription || null,
-//     data.optimumDataCollection || null,
-//     data.optimumPixelResolution || null,
-//     data.optimumPixelResolutionUnit || null,
-//     data.optimumGISResolution || null,
-//     data.optimumGISResolutionUnit || null,
-//     data.optimumMLResolution || null,
-//     data.optimumMLResolutionUnit || null,
-//     data.optimumPredictionSpatialResolution || null,
-//     data.optimumPredictionSpatialResolutionUnit || null,
-//     data.optimumPredictionTemporalResolution || null,
-//     data.optimumSurveyAggregationPrimary || null,
-//     data.optimumSurveyAggregationSecondary || null,
-//     data.optimumOtherResolution || null,
-//     data.aoiType || null,
-//     data.aoiLocation || null,
-//     data.minLat || null,
-//     data.maxLat || null,
-//     data.minLon || null,
-//     data.maxLon || null,
-//     data.aoiFileName || null,
-//     data.otherRequirements || null
-// ];
+    const optimumDataCollection = d.optimumDataCollection || null;
 
-//     db.query(sql, values, (err, result) => {
-//         if (err) {
-//             console.error(err);
-//             res.status(500).json({ message: 'Error saving data' });
-//         } else {
-//             res.json({ message: 'Data saved successfully', id: result.insertId });
-//         }
-//     });
-// });
+    const result = await pool.query(`
+      INSERT INTO section1_metadata (
+        dataset_title, evaluator_name, evaluator_org,
+        data_processing_level, data_type, data_type_other,
+        evaluation_type, use_case_description, optimum_data_collection,
+        optimum_pixel_resolution, optimum_pixel_unit,
+        optimum_gis_resolution, optimum_gis_unit,
+        optimum_ml_resolution, optimum_ml_unit,
+        optimum_prediction_spatial_resolution, optimum_prediction_spatial_unit,
+        optimum_prediction_temporal,
+        optimum_survey_level1, optimum_survey_level2,
+        optimum_other_resolution,
+        aoi_type, aoi_dropdown,
+        min_lat, max_lat, min_lon, max_lon,
+        aoi_file_name,
+        other_requirements,
+        step1
+      )
+      VALUES (
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,
+        $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,
+        $22,$23,$24,$25,$26,$27,$28,$29,$30
+      ) RETURNING id
+    `, [
+      d.datasetTitle || null,
+      d.evaluatorName || null,
+      d.evaluatorOrg || null,
+      d.dataProcessingLevel || null,
+      d.dataType || null,
+      d.dataTypeOther || null,
+      d.evaluationType || null,
+      d.useCaseDescription || null,
+      optimumDataCollection,
 
+      d.optimumPixelResolution || null,
+      d.optimumPixelResolutionUnit || null,
+      d.optimumGISResolution || null,
+      d.optimumGISResolutionUnit || null,
+      d.optimumMLResolution || null,
+      d.optimumMLUnit || null,
+      d.optimumPredictionSpatialResolution || null,
+      d.optimumPredictionSpatialResolutionUnit || null,
+      d.optimumPredictionTemporalResolution || null,
+      d.optimumSurveyAggregation1 || null,
+      d.optimumSurveyAggregation2 || null,
+      d.optimumOtherResolution || null,
 
-router.post('/', (req, res) => {
-    const data = req.body;
+      d.aoiType || null,
+      d.aoiDropdown || null,
+      minLat, maxLat, minLon, maxLon,
+      d.aoiFileName || null,
+      d.otherRequirements || null,
 
-    const sql = `
-    INSERT INTO section1
-    (dataset_title, evaluator_name, affiliation, data_processing_level, data_type, data_type_other,
-    evaluation_type, use_case_description, optimum_data_collection,
-    optimum_pixel_resolution, optimum_pixel_resolution_unit,
-    optimum_gis_resolution, optimum_gis_resolution_unit,
-    optimum_ml_resolution, optimum_ml_resolution_unit,
-    optimum_prediction_spatial_resolution, optimum_prediction_spatial_resolution_unit,
-    optimum_prediction_temporal_resolution,
-    optimum_survey_aggregation_primary, optimum_survey_aggregation_secondary,
-    optimum_other_resolution, aoi_type, aoi_location, min_lat, max_lat, min_lon, max_lon,
-    aoi_file_name, other_requirements)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+      d.step1 ?? 0  // default to 0 if missing
+    ]);
 
-    const values = [
-        data.datasetTitle || null,
-        data.evaluatorName || null,
-        data.affiliation || null,
-        data.dataProcessingLevel || null,
-        data.dataType || null,
-        data.dataTypeOther || null,
-        data.evaluationType || null,
-        data.useCaseDescription || null,
-        data.optimumDataCollection || null,
-        data.optimumPixelResolution || null,
-        data.optimumPixelResolutionUnit || null,
-        data.optimumGISResolution || null,
-        data.optimumGISResolutionUnit || null,
-        data.optimumMLResolution || null,
-        data.optimumMLResolutionUnit || null,
-        data.optimumPredictionSpatialResolution || null,
-        data.optimumPredictionSpatialResolutionUnit || null,
-        data.optimumPredictionTemporalResolution || null,
-        data.optimumSurveyAggregationPrimary || null,
-        data.optimumSurveyAggregationSecondary || null,
-        data.optimumOtherResolution || null,
-        data.aoiType || null,
-        data.aoiLocation || null,
-        data.minLat || null,
-        data.maxLat || null,
-        data.minLon || null,
-        data.maxLon || null,
-        data.aoiFileName || null,
-        data.otherRequirements || null
-    ];
+    console.log('Inserted Section1 with ID:', result.rows[0].id);
+    res.json({ success: true, id: result.rows[0].id });
 
-    db.query(sql, values, (err, result) => {
-        if (err) {
-            console.error("MYSQL ERROR:", err.sqlMessage);
-            return res.status(500).json({ message: 'Error saving Section1 data' });
-        }
-        res.json({ message: 'Section1 saved successfully', id: result.insertId });
-    });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
-// ----------------------
-// GET ALL  /section1
-// ----------------------
-router.get('/get', async (req, res) => {
-    const sql = `SELECT * FROM section1 ORDER BY id DESC`;
+// GET section1 id by evaluatorName
+router.get('/byEvaluator/:name', async (req, res) => {
+  try {
+    const evaluatorName = req.params.name;
 
-    try {
-        const [rows] = await db.query(sql);  // <- use await
-        res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error fetching data' });
+    const result = await pool.query(
+      `SELECT id FROM section1_metadata 
+       WHERE evaluator_name = $1 
+       ORDER BY id DESC LIMIT 1`,
+      [evaluatorName]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No Section1 found for evaluator" });
     }
+
+    res.json({ id: result.rows[0].id });
+
+  } catch (err) {
+    console.error("Error fetching Section1 by evaluator:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
-
-router.get('/latest', async (req, res) => {
-    const sql = "SELECT * FROM section1 ORDER BY id DESC LIMIT 1";
-
-    try {
-        const [results] = await db.query(sql);
-        if (results.length === 0) {
-            return res.status(404).json({ message: "No entries found" });
-        }
-
-        res.json({
-            message: "Latest Section1 entry",
-            data: results[0]
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Error fetching data" });
-    }
-});
-// ----------------------
-// GET BY ID  /section1/:id
-// ----------------------
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    const sql = "SELECT * FROM section1 WHERE id = ?";
-
-    try {
-        const [results] = await db.query(sql, [id]); // <- promise style
-        if (results.length === 0) {
-            return res.status(404).json({ message: "No record found" });
-        }
-
-        res.json(results[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Database error" });
-    }
-});
-
-// ----------------------
-// GET /section1/latest  → returns the last inserted row
-// ----------------------
-// router.get('/latest', async (req, res) => {
-//     const sql = "SELECT * FROM section1 ORDER BY id DESC LIMIT 1";
-
-//     try {
-//         const [results] = await db.query(sql); // <- promise style
-//         if (results.length === 0) {
-//             return res.status(404).json({ message: "No entries found" });
-//         }
-
-//         res.json({
-//             message: "Latest Section1 entry",
-//             data: results[0]
-//         });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ message: "Error fetching data" });
-//     }
-// });
 
 
 module.exports = router;
