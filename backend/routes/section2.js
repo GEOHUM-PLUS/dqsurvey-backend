@@ -100,7 +100,8 @@ router.post('/section2', async (req, res) => {
       d.dataset_description || null,
       d.dataset_description_link || null,
     //   d.keywords ? JSON.parse(d.keywords) : null,
-    d.keywords || null,
+    // d.keywords || null,
+    d.keywords ? JSON.stringify(d.keywords) : null, // ✅ FIX
 
       d.language || null,
       d.metadata_documentation || null,

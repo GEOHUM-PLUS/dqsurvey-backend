@@ -16,14 +16,13 @@ app.use(cors());
 
 // app.use(bodyParser.json());
 app.use(express.json());
-// app.use('/section2', require('./routes/section2'));
 
 // Routes
 app.use('/dataset', datasetEvaluationRoutes);
 app.use('/section1', section1Routes);
 app.use('/section2', section2Routes);
 
-// Route example
+// Route 
 app.get('/', (req, res) => {
   res.send('🚀 Backend is working!');
 });
