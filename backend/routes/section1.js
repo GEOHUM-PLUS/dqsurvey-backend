@@ -5,7 +5,7 @@ const pool = require('../config/connection'); // your pg pool
 router.post('/section1', async (req, res) => {
   try {
     const d = req.body;
-    console.log('Payload received:', d);
+    // console.log('Payload received:', d);
 
     // Convert numeric fields or null
     const minLat = d.minLat ? parseFloat(d.minLat) : null;
@@ -80,7 +80,7 @@ router.post('/section1', async (req, res) => {
   }
 });
 
-// GET section1 id by evaluatorName
+// GET section1 id by evaluatorName (not nesasarily the last one)
 router.get('/byEvaluator/:name', async (req, res) => {
   try {
     const evaluatorName = req.params.name;
@@ -101,6 +101,37 @@ router.get('/byEvaluator/:name', async (req, res) => {
   } catch (err) {
     console.error("Error fetching Section1 by evaluator:", err);
     res.status(500).json({ message: "Database error" });
+  }
+});
+
+// GET last inserted section1 id
+router.get('/last-id', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id
+      FROM section1_metadata
+      ORDER BY id DESC
+      LIMIT 1
+    `);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No records found'
+      });
+    }
+
+    res.json({
+      success: true,
+      id: result.rows[0].id
+    });
+
+  } catch (err) {
+    console.error('Error fetching last Section1 ID:', err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 });
 

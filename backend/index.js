@@ -6,6 +6,7 @@ const db = require('./config/connection');
 const datasetEvaluationRoutes = require('./routes/dataset_evaluation');
 const section1Routes = require('./routes/section1');
 const section2Routes = require('./routes/section2');
+const section3Routes = require('./routes/section3');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/dataset', datasetEvaluationRoutes);
 app.use('/section1', section1Routes);
 app.use('/section2', section2Routes);
+app.use('/section3', section3Routes);
 
 // Route 
 app.get('/', (req, res) => {
