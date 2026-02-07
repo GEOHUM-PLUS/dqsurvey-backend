@@ -97,7 +97,7 @@ router.post('/section3', async (req, res) => {
       d.temporalFitScore || null,
         0   // step3 default
     ]);
-console.log('Payload received:', d);
+    console.log('Payload received:', d);
     res.json({
       success: true,
       section3_id: result.rows[0].id
