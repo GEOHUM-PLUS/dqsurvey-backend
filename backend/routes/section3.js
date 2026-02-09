@@ -95,7 +95,7 @@ router.post('/section3', async (req, res) => {
       d.optimumCollectionDate || null,
       d.temporalDeviation || null,
       d.temporalFitScore || null,
-        0   // step3 default
+      0   // step3 default
     ]);
     console.log('Payload received:', d);
     res.json({
@@ -108,5 +108,41 @@ router.post('/section3', async (req, res) => {
     res.status(500).json({ message: 'Database error' });
   }
 });
+
+// GET section2 by section1Id
+router.get('/bySection1And2/:section1Id/:section2Id', async (req, res) => {
+  try {
+
+    const { section1Id, section2Id } = req.params;
+
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM section3_design
+      WHERE section1_id = $1
+      AND section2_id = $2
+      `,
+      [section1Id, section2Id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No Section3 data found'
+      });
+    }
+
+    res.json(result.rows[0]);
+
+
+  } catch (err) {
+    console.error('Section3 GET Error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching section3'
+    });
+  }
+});
+
 
 module.exports = router;

@@ -8,6 +8,7 @@ const section1Routes = require('./routes/section1');
 const section2Routes = require('./routes/section2');
 const section3Routes = require('./routes/section3');
 const section4Routes = require('./routes/section4');
+const section5Routes = require('./routes/section5');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use('/section1', section1Routes);
 app.use('/section2', section2Routes);
 app.use('/section3', section3Routes);
 app.use('/section4', section4Routes);
+app.use('/section5', section5Routes);
 
 // Route 
 app.get('/', (req, res) => {
@@ -32,15 +34,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/checkdb', async (req, res) => {
-    const currentTime = getCurrentDateTime();
-    try {
-        const [rows, fields] = await pool.query('SELECT 1');
-        logger.info(`Get Hit on /checkdb - ${currentTime}`);
-        res.status(200).json({ message: 'Database connection is active.' });
-    } catch (error) {
-        console.error('Error checking database connection:', error);
-        res.status(500).json({ error: 'Database connection is not available.' });
-    }
+  const currentTime = getCurrentDateTime();
+  try {
+    const [rows, fields] = await pool.query('SELECT 1');
+    logger.info(`Get Hit on /checkdb - ${currentTime}`);
+    res.status(200).json({ message: 'Database connection is active.' });
+  } catch (error) {
+    console.error('Error checking database connection:', error);
+    res.status(500).json({ error: 'Database connection is not available.' });
+  }
 });
 // Start server
 app.listen(PORT, () => {

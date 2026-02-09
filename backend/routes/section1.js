@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/connection'); // your pg pool
-
+// POST api for section1
 router.post('/section1', async (req, res) => {
   try {
     const d = req.body;
@@ -71,7 +71,7 @@ router.post('/section1', async (req, res) => {
       d.step1 ?? 0  // default to 0 if missing
     ]);
 
-    console.log('Inserted Section1 with ID:', result.rows[0].id);
+    // console.log('Inserted Section1 with ID:', result.rows[0].id);
     res.json({ success: true, id: result.rows[0].id });
 
   } catch (err) {
@@ -80,60 +80,23 @@ router.post('/section1', async (req, res) => {
   }
 });
 
-// GET section1 id by evaluatorName (not nesasarily the last one)
-router.get('/byEvaluator/:name', async (req, res) => {
+// GET section1 by id
+router.get('/:id', async (req, res) => {
   try {
-    const evaluatorName = req.params.name;
+    const { id } = req.params;
 
     const result = await pool.query(
-      `SELECT id FROM section1_metadata 
-       WHERE evaluator_name = $1 
-       ORDER BY id DESC LIMIT 1`,
-      [evaluatorName]
+      `SELECT * FROM section1_metadata WHERE id=$1`,
+      [id]
     );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "No Section1 found for evaluator" });
-    }
-
-    res.json({ id: result.rows[0].id });
-
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error fetching Section1 by evaluator:", err);
-    res.status(500).json({ message: "Database error" });
+    console.error('Section1 GET Error:', err);
+    res.status(500).json({ success: false, message: 'Error fetching section1' });
   }
 });
 
-// GET last inserted section1 id
-router.get('/last-id', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id
-      FROM section1_metadata
-      ORDER BY id DESC
-      LIMIT 1
-    `);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'No records found'
-      });
-    }
-
-    res.json({
-      success: true,
-      id: result.rows[0].id
-    });
-
-  } catch (err) {
-    console.error('Error fetching last Section1 ID:', err);
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
-  }
-});
 
 
 module.exports = router;

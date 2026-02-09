@@ -24,7 +24,7 @@
 //         data.section1Id,
 //         data.identifier || null,
 //         data.dataset_description || null,
-       
+
 //         data.keywords || null,  
 //          data.dataset_description_link || null,
 //         data.language || null,
@@ -99,9 +99,9 @@ router.post('/section2', async (req, res) => {
       d.identifier || null,
       d.dataset_description || null,
       d.dataset_description_link || null,
-    //   d.keywords ? JSON.parse(d.keywords) : null,
-    // d.keywords || null,
-    d.keywords ? JSON.stringify(d.keywords) : null, // ✅ FIX
+      //   d.keywords ? JSON.parse(d.keywords) : null,
+      // d.keywords || null,
+      d.keywords ? JSON.stringify(d.keywords) : null, // ✅ FIX
 
       d.language || null,
       d.metadata_documentation || null,
@@ -125,6 +125,24 @@ router.post('/section2', async (req, res) => {
   } catch (err) {
     console.error("Section2 Insert Error:", err);
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET section2 by section1Id
+router.get('/bySection1/:section1Id', async (req, res) => {
+  try {
+    const { section1Id } = req.params;
+    const result = await pool.query(
+      `SELECT * FROM section2_descriptives WHERE section1_id=$1`,
+      [section1Id]
+    );
+
+    res.json(result.rows[0]);
+
+
+  } catch (err) {
+    console.error('Section2 GET Error:', err);
+    res.status(500).json({ success: false, message: 'Error fetching section2' });
   }
 });
 
