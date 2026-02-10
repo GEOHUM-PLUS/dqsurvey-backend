@@ -33,22 +33,39 @@ const dbConfig = {
 //   idleTimeoutMillis: 30000,
 //   connectionTimeoutMillis: 30000
 // });
-const pool = new Pool({
-  host: process.env.DB_HOST_DEV,
-  port: process.env.DB_PORT_DEV,
-  user: process.env.DB_USER_DEV,
-  password: process.env.DB_PASSWORD_DEV,
-  database: process.env.DB_NAME_DEV,
-  ssl: { rejectUnauthorized: false }
-});
 
 // local connection
 // const pool = new Pool(dbConfig);
+
+// pool.connect()
+//   .then(client => {
+//     console.log(`✅ Connected to PostgreSQL Database: ${dbConfig.database}`);
+//     client.release();
+//   })
+//   .catch(err => console.error('❌ Database connection failed:', err.message));
+
+const pool = new Pool({
+  host: isProduction ? process.env.DB_HOST_PROD : process.env.DB_HOST_DEV,
+  user: isProduction ? process.env.DB_USER_PROD : process.env.DB_USER_DEV,
+  password: isProduction ? process.env.DB_PASSWORD_PROD : process.env.DB_PASSWORD_DEV,
+  database: isProduction ? process.env.DB_NAME_PROD : process.env.DB_NAME_DEV,
+  port: isProduction ? process.env.DB_PORT_PROD : process.env.DB_PORT_DEV,
+
+  // Change this part:
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
+
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 30000
+});
+
+
 pool.connect()
   .then(client => {
-    console.log(`✅ Connected to PostgreSQL Database: ${dbConfig.database}`);
+    console.log(`✅ Connected to ${isProduction ? 'Production' : 'Local'} DB: ${isProduction ? process.env.DB_NAME_PROD : process.env.DB_NAME_DEV}`);
     client.release();
   })
-  .catch(err => console.error('❌ Database connection failed:', err.message));
-
+  .catch(err => {
+    console.error('❌ Database connection failed:', err.message);
+  });
 module.exports = pool;
