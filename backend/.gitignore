@@ -3,4 +3,4 @@ node_modules/
 
 # Environment variables (Crucial for security!)
 .env
-connection.js
+config/connection.js
