@@ -1,6 +1,0 @@
-# Dependencies
-node_modules/
-
-# Environment variables (Crucial for security!)
-.env
-config/connection.js
