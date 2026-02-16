@@ -1,63 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const db = require('../config/connection'); // your MySQL connection
-
-
-// // POST /section2
-// router.post('/', (req, res) => {
-//     const data = req.body;
-
-//     if (!data.section1Id) {
-//         return res.status(400).json({ message: 'section1Id is required' });
-//     }
-//      console.log("BODY RECEIVED:", req.body);
-//     res.json({ message: "Section2 route hit successfully" });
-
-//     const sql = `
-//         INSERT INTO section2 
-//         (section1Id, identifier, dataset_description,keywords, dataset_description_link,language, metadata_documentation, metadata_standards, score_metadata_documentation,
-//         access_restrictions, api_availability, usage_rights, data_format, format_standards, score_accessibility,
-//         crs, positional_accuracy, spatial_uncertainty, score_spatial_accuracy)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//         `;
-//     const values = [
-//         data.section1Id,
-//         data.identifier || null,
-//         data.dataset_description || null,
-
-//         data.keywords || null,  
-//          data.dataset_description_link || null,
-//         data.language || null,
-//         data.metadata_documentation || null,
-//         data.metadata_standards || null,
-//         data.score_metadata_documentation || null,
-
-//         data.access_restrictions || null,
-//         data.api_availability || null,
-//         data.usage_rights || null,
-//         data.data_format || null,
-//         data.format_standards || null,
-//         data.score_accessibility || null,
-
-//         data.crs || null,
-//         data.positional_accuracy || null,
-//         data.spatial_uncertainty || null,
-//         data.score_spatial_accuracy || null
-//     ];
-//     //  res.json({ message: 'Section 2 data saved successfully', id: result.insertId });
-
-//     db.query(sql, values, (err, result) => {
-//         if (err) {
-//             console.error("MYSQL ERROR:", err.sqlMessage); // move it here
-//             return res.status(500).json({ message: 'Error saving Section 2 data' });
-//         }
-//         res.json({ message: 'Section 2 data saved successfully', id: result.insertId });
-//     });
-
-
-// });
-
-// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/connection');
@@ -129,20 +69,91 @@ router.post('/section2', async (req, res) => {
 });
 
 // GET section2 by section1Id
-router.get('/bySection1/:section1Id', async (req, res) => {
+router.get('/bySection1/:section2Id/:section1Id', async (req, res) => {
   try {
-    const { section1Id } = req.params;
+    const { section2Id ,section1Id } = req.params;
     const result = await pool.query(
-      `SELECT * FROM section2_descriptives WHERE section1_id=$1`,
-      [section1Id]
+      `SELECT * FROM section2_descriptives WHERE id=$1
+    AND section1_id=$2`,
+      [section2Id, section1Id]
     );
 
     res.json(result.rows[0]);
 
-
   } catch (err) {
     console.error('Section2 GET Error:', err);
     res.status(500).json({ success: false, message: 'Error fetching section2' });
+  }
+});
+
+
+// UPDATE section2 by id
+router.put('/section2/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const d = req.body;
+
+    const result = await pool.query(`
+      UPDATE section2_descriptives SET
+        identifier = $1,
+        dataset_description = $2,
+        dataset_description_link = $3,
+        keywords = $4,
+        language = $5,
+        metadata_documentation = $6,
+        metadata_standards = $7,
+        score_metadata_documentation = $8,
+        access_restrictions = $9,
+        api_availability = $10,
+        usage_rights = $11,
+        data_format = $12,
+        format_standards = $13,
+        score_accessibility = $14,
+        crs = $15,
+        positional_accuracy = $16,
+        spatial_uncertainty = $17,
+        score_spatial_accuracy = $18,
+        step2 = 0
+      WHERE id = $19
+      AND section1_id = $20
+      RETURNING id
+    `, [
+      d.identifier || null,
+      d.dataset_description || null,
+      d.dataset_description_link || null,
+      d.keywords ? JSON.stringify(d.keywords) : null,
+
+      d.language || null,
+      d.metadata_documentation || null,
+      d.metadata_standards || null,
+      d.score_metadata_documentation != null ? parseInt(d.score_metadata_documentation) : null,
+
+      d.access_restrictions || null,
+      d.api_availability || null,
+      d.usage_rights || null,
+
+      d.data_format || null,
+      d.format_standards || null,
+      d.score_accessibility != null ? parseInt(d.score_accessibility) : null,
+
+      d.crs || null,
+      d.positional_accuracy || null,
+      d.spatial_uncertainty || null,
+      d.score_spatial_accuracy != null ? parseInt(d.score_spatial_accuracy) : null,
+
+      id,
+      d.section1Id
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Section2 row not found for update" });
+    }
+
+    res.json({ success: true, id: result.rows[0].id });
+
+  } catch (err) {
+    console.error("Section2 UPDATE Error:", err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
