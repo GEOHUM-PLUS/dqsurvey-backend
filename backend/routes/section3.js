@@ -109,20 +109,22 @@ router.post('/section3', async (req, res) => {
   }
 });
 
-// GET section2 by section1Id
-router.get('/bySection1And2/:section1Id/:section2Id', async (req, res) => {
+// GET section3 by
+router.get('/bySection1And2/:section3Id/:section1Id/:section2Id', async (req, res) => {
   try {
 
-    const { section1Id, section2Id } = req.params;
+    const { section3Id, section1Id, section2Id } = req.params;
 
     const result = await pool.query(
       `
       SELECT *
       FROM section3_design
-      WHERE section1_id = $1
-      AND section2_id = $2
+      WHERE 
+      id = $1
+      AND section1_id = $2
+      AND section2_id = $3
       `,
-      [section1Id, section2Id]
+      [section3Id, section1Id, section2Id]
     );
 
     if (result.rows.length === 0) {
@@ -134,6 +136,7 @@ router.get('/bySection1And2/:section1Id/:section2Id', async (req, res) => {
 
     res.json(result.rows[0]);
 
+console.log('Fetched Section2:', result.rows[0]);
 
   } catch (err) {
     console.error('Section3 GET Error:', err);

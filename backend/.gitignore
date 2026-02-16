@@ -2,5 +2,5 @@
 node_modules/
 
 # Environment variables (Crucial for security!)
-# .env
+.env
 config/connection.js

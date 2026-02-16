@@ -155,43 +155,10 @@ router.post('/section4', async (req, res) => {
   }
 });
 
-// GET section4 by section1Id, section2Id, section3Id
-// router.get('/bySection1And2And3/:section1Id/:section2Id/:section3Id', async (req, res) => {
-//   try {
-
-//     const { section1Id, section2Id, section3Id } = req.params;
-
-//     // Add this check to see what the backend is actually receiving
-//     if (!section1Id || !section2Id || !section3Id) {
-//       return res.status(400).json({ success: false, message: "Missing required IDs" });
-//     }
-
-//     const result = await pool.query(
-//       `SELECT * FROM section4_conformance 
-//    WHERE section1_id = $1 AND section2_id = $2 AND section3_id = $3`,
-//       [parseInt(section1Id), parseInt(section2Id), parseInt(section3Id)]
-//     );
-//     if (result.rows.length === 0) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'No Section4 data found'
-//       });
-//     }
-
-//     res.json(result.rows[0]);
-
-//   } catch (err) {
-//     console.error('Section4 GET Error:', err);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Error fetching section4'
-//     });
-//   }
-// });
 // GET section4 by section1Id, section2Id, section3Id (including input datasets)
-router.get('/bySection1And2And3/:section1Id/:section2Id/:section3Id', async (req, res) => {
+router.get('/bySection1And2And3/:section4Id/:section1Id/:section2Id/:section3Id', async (req, res) => {
   try {
-    const { section1Id, section2Id, section3Id } = req.params;
+    const { section4Id, section1Id, section2Id, section3Id } = req.params;
 
     if (!section1Id || !section2Id || !section3Id) {
       return res.status(400).json({ success: false, message: "Missing required IDs" });
@@ -200,8 +167,11 @@ router.get('/bySection1And2And3/:section1Id/:section2Id/:section3Id', async (req
     // 1️⃣ Get Section4 main record
     const section4Result = await pool.query(
       `SELECT * FROM section4_conformance 
-       WHERE section1_id = $1 AND section2_id = $2 AND section3_id = $3`,
-      [parseInt(section1Id), parseInt(section2Id), parseInt(section3Id)]
+       WHERE id = $1
+       AND section1_id = $2 
+       AND section2_id = $3 
+       AND section3_id = $4`,
+      [parseInt(section4Id), parseInt(section1Id), parseInt(section2Id), parseInt(section3Id)]
     );
 
     if (section4Result.rows.length === 0) {
