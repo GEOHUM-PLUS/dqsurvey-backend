@@ -87,5 +87,74 @@ router.get('/bySection1/:section2Id/:section1Id', async (req, res) => {
 });
 
 
+// UPDATE section2 by id
+router.put('/section2/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const d = req.body;
+
+    const result = await pool.query(`
+      UPDATE section2_descriptives SET
+        identifier = $1,
+        dataset_description = $2,
+        dataset_description_link = $3,
+        keywords = $4,
+        language = $5,
+        metadata_documentation = $6,
+        metadata_standards = $7,
+        score_metadata_documentation = $8,
+        access_restrictions = $9,
+        api_availability = $10,
+        usage_rights = $11,
+        data_format = $12,
+        format_standards = $13,
+        score_accessibility = $14,
+        crs = $15,
+        positional_accuracy = $16,
+        spatial_uncertainty = $17,
+        score_spatial_accuracy = $18,
+        step2 = 0
+      WHERE id = $19
+      AND section1_id = $20
+      RETURNING id
+    `, [
+      d.identifier || null,
+      d.dataset_description || null,
+      d.dataset_description_link || null,
+      d.keywords ? JSON.stringify(d.keywords) : null,
+
+      d.language || null,
+      d.metadata_documentation || null,
+      d.metadata_standards || null,
+      d.score_metadata_documentation != null ? parseInt(d.score_metadata_documentation) : null,
+
+      d.access_restrictions || null,
+      d.api_availability || null,
+      d.usage_rights || null,
+
+      d.data_format || null,
+      d.format_standards || null,
+      d.score_accessibility != null ? parseInt(d.score_accessibility) : null,
+
+      d.crs || null,
+      d.positional_accuracy || null,
+      d.spatial_uncertainty || null,
+      d.score_spatial_accuracy != null ? parseInt(d.score_spatial_accuracy) : null,
+
+      id,
+      d.section1Id
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Section2 row not found for update" });
+    }
+
+    res.json({ success: true, id: result.rows[0].id });
+
+  } catch (err) {
+    console.error("Section2 UPDATE Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 module.exports = router;
