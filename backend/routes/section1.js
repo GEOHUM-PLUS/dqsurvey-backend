@@ -6,42 +6,34 @@ router.post('/section1', async (req, res) => {
   try {
 
     const d = req.body;
-    // console.log('Payload received:', d);
-
-    // Convert numeric fields or null
-    // const minLat = d.minLat ? parseFloat(d.minLat) : null;
-    // const maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
-    // const minLon = d.minLon ? parseFloat(d.minLon) : null;
-    // const maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
-
     const optimumDataCollection = d.optimumDataCollection || null;
 
     // --- AOI sanitization based on aoiType ---
-let aoiDropdown = d.aoiDropdown || null;
-let minLat = d.minLat ? parseFloat(d.minLat) : null;
-let maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
-let minLon = d.minLon ? parseFloat(d.minLon) : null;
-let maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
-let aoiFileName = d.aoiFileName || null;
+    let aoiDropdown = d.aoiDropdown || null;
+    let minLat = d.minLat ? parseFloat(d.minLat) : null;
+    let maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
+    let minLon = d.minLon ? parseFloat(d.minLon) : null;
+    let maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
+    let aoiFileName = d.aoiFileName || null;
 
-if (d.aoiType === 'dropdown') {
-  // keep dropdown, clear coords + file
-  minLat = maxLat = minLon = maxLon = null;
-  aoiFileName = null;
-} else if (d.aoiType === 'coordinates') {
-  // keep coords, clear dropdown + file
-  aoiDropdown = null;
-  aoiFileName = null;
-} else if (d.aoiType === 'upload') {
-  // keep file, clear dropdown + coords
-  aoiDropdown = null;
-  minLat = maxLat = minLon = maxLon = null;
-} else {
-  // no selection => clear all
-  aoiDropdown = null;
-  minLat = maxLat = minLon = maxLon = null;
-  aoiFileName = null;
-}
+    if (d.aoiType === 'dropdown') {
+      // keep dropdown, clear coords + file
+      minLat = maxLat = minLon = maxLon = null;
+      aoiFileName = null;
+    } else if (d.aoiType === 'coordinates') {
+      // keep coords, clear dropdown + file
+      aoiDropdown = null;
+      aoiFileName = null;
+    } else if (d.aoiType === 'upload') {
+      // keep file, clear dropdown + coords
+      aoiDropdown = null;
+      minLat = maxLat = minLon = maxLon = null;
+    } else {
+      // no selection => clear all
+      aoiDropdown = null;
+      minLat = maxLat = minLon = maxLon = null;
+      aoiFileName = null;
+    }
 
     const result = await pool.query(`
       INSERT INTO section1_metadata (
@@ -132,39 +124,33 @@ router.put('/section1/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const d = req.body;
-
-    // const minLat = d.minLat ? parseFloat(d.minLat) : null;
-    // const maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
-    // const minLon = d.minLon ? parseFloat(d.minLon) : null;
-    // const maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
-
     const optimumDataCollection = d.optimumDataCollection || null;
-// --- AOI sanitization based on aoiType ---
-let aoiDropdown = d.aoiDropdown || null;
-let minLat = d.minLat ? parseFloat(d.minLat) : null;
-let maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
-let minLon = d.minLon ? parseFloat(d.minLon) : null;
-let maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
-let aoiFileName = d.aoiFileName || null;
+    // --- AOI sanitization based on aoiType ---
+    let aoiDropdown = d.aoiDropdown || null;
+    let minLat = d.minLat ? parseFloat(d.minLat) : null;
+    let maxLat = d.maxLat ? parseFloat(d.maxLat) : null;
+    let minLon = d.minLon ? parseFloat(d.minLon) : null;
+    let maxLon = d.maxLon ? parseFloat(d.maxLon) : null;
+    let aoiFileName = d.aoiFileName || null;
 
-if (d.aoiType === 'dropdown') {
-  // keep dropdown, clear coords + file
-  minLat = maxLat = minLon = maxLon = null;
-  aoiFileName = null;
-} else if (d.aoiType === 'coordinates') {
-  // keep coords, clear dropdown + file
-  aoiDropdown = null;
-  aoiFileName = null;
-} else if (d.aoiType === 'upload') {
-  // keep file, clear dropdown + coords
-  aoiDropdown = null;
-  minLat = maxLat = minLon = maxLon = null;
-} else {
-  // no selection => clear all
-  aoiDropdown = null;
-  minLat = maxLat = minLon = maxLon = null;
-  aoiFileName = null;
-}
+    if (d.aoiType === 'dropdown') {
+      // keep dropdown, clear coords + file
+      minLat = maxLat = minLon = maxLon = null;
+      aoiFileName = null;
+    } else if (d.aoiType === 'coordinates') {
+      // keep coords, clear dropdown + file
+      aoiDropdown = null;
+      aoiFileName = null;
+    } else if (d.aoiType === 'upload') {
+      // keep file, clear dropdown + coords
+      aoiDropdown = null;
+      minLat = maxLat = minLon = maxLon = null;
+    } else {
+      // no selection => clear all
+      aoiDropdown = null;
+      minLat = maxLat = minLon = maxLon = null;
+      aoiFileName = null;
+    }
 
     const result = await pool.query(`
       UPDATE section1_metadata SET
@@ -232,7 +218,7 @@ if (d.aoiType === 'dropdown') {
 
       d.aoiType || null,
       // d.aoiDropdown || null,
-aoiDropdown || null,
+      aoiDropdown || null,
       minLat, maxLat, minLon, maxLon,
 
       // d.aoiFileName || null,
