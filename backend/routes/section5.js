@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/connection');
 
-// ===============================
-// INSERT SECTION 5 CONTEXT
-// ===============================
 function arrayToBulletText(arr) {
     if (!arr || !Array.isArray(arr)) return null;
 
@@ -211,7 +208,7 @@ router.get(
 
             res.json(result.rows[0]);
 
-            console.log('Fetched Section5 with ID:', section5Id);
+            // console.log('Fetched Section5 with ID:', section5Id);
 
         } catch (err) {
             console.error('Section5 GET Error:', err);

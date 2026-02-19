@@ -134,9 +134,9 @@ router.get('/bySection1And2/:section3Id/:section1Id/:section2Id', async (req, re
       });
     }
 
-    res.json(result.rows[0]); 
+    res.json(result.rows[0]);
 
-console.log('Fetched Section2:', result.rows[0]);
+    console.log('Fetched Section2:', result.rows[0]);
 
   } catch (err) {
     console.error('Section3 GET Error:', err);
@@ -234,7 +234,7 @@ router.put('/section3/:id', async (req, res) => {
 
       id
     ]);
-console.log('Payload received:', d);
+    // console.log('Payload received:', d);
     res.json({ success: true, section3_id: result.rows[0].id });
   } catch (err) {
     console.error('❌ Section3 UPDATE Error:', err);

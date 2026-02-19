@@ -71,7 +71,7 @@ router.post('/section2', async (req, res) => {
 // GET section2 by section1Id
 router.get('/bySection1/:section2Id/:section1Id', async (req, res) => {
   try {
-    const { section2Id ,section1Id } = req.params;
+    const { section2Id, section1Id } = req.params;
     const result = await pool.query(
       `SELECT * FROM section2_descriptives WHERE id=$1
     AND section1_id=$2`,
