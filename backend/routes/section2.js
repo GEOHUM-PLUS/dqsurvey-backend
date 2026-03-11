@@ -10,6 +10,7 @@ router.post('/section2', async (req, res) => {
       INSERT INTO section2_descriptives (
         section1_id,
         identifier,
+        identifier_type,
         dataset_description,
         dataset_description_link,
         keywords,
@@ -31,12 +32,13 @@ router.post('/section2', async (req, res) => {
       )
       VALUES (
         $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
-        $11,$12,$13,$14,$15,$16,$17,$18,$19,$20
+        $11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21
       )
       RETURNING id
     `, [
       d.section1Id,
       d.identifier || null,
+      d.identifier_type || null,
       d.dataset_description || null,
       d.dataset_description_link || null,
       //   d.keywords ? JSON.parse(d.keywords) : null,
@@ -96,29 +98,31 @@ router.put('/section2/:id', async (req, res) => {
     const result = await pool.query(`
       UPDATE section2_descriptives SET
         identifier = $1,
-        dataset_description = $2,
-        dataset_description_link = $3,
-        keywords = $4,
-        language = $5,
-        metadata_documentation = $6,
-        metadata_standards = $7,
-        score_metadata_documentation = $8,
-        access_restrictions = $9,
-        api_availability = $10,
-        usage_rights = $11,
-        data_format = $12,
-        format_standards = $13,
-        score_accessibility = $14,
-        crs = $15,
-        positional_accuracy = $16,
-        spatial_uncertainty = $17,
-        score_spatial_accuracy = $18,
+        identifier_type = $2,
+        dataset_description = $3,
+        dataset_description_link = $4,
+        keywords = $5,
+        language = $6,
+        metadata_documentation = $7,
+        metadata_standards = $8,
+        score_metadata_documentation = $9,
+        access_restrictions = $10,
+        api_availability = $11,
+        usage_rights = $12,
+        data_format = $13,
+        format_standards = $14,
+        score_accessibility = $15,
+        crs = $16,
+        positional_accuracy = $17,
+        spatial_uncertainty = $18,
+        score_spatial_accuracy = $19,
         step2 = 0
-      WHERE id = $19
-      AND section1_id = $20
+      WHERE id = $20
+      AND section1_id = $21
       RETURNING id
     `, [
       d.identifier || null,
+      d.identifier_type || null,
       d.dataset_description || null,
       d.dataset_description_link || null,
       d.keywords ? JSON.stringify(d.keywords) : null,
